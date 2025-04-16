@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPT Duplicate Checker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            cursor: none;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --text: #f8fafc;
+            --text-muted: #cbd5e1;
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.5);
+            --border: rgba(148, 163, 184, 0.2);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(270deg, #0f172a, #1e293b, #334155);
+            background-size: 600% 600%;
+            animation: animatedBackground 20s ease infinite;
+            color: var(--text);
+            padding: 30px;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        @keyframes animatedBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 700;
+            animation: fadeInZoom 1.2s ease-out;
+            font-family: 'Montserrat', sans-serif;
+            letter-spacing: -0.5px;
+        }
+
+        h1 { 
+            font-size: 3.5rem; 
+            color: var(--accent); 
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+        }
+        
+        h2 { 
+            font-size: 2rem; 
+            color: var(--primary-light);
+            margin-bottom: 1.25rem;
+        }
+
+        @keyframes fadeInZoom {
+            0% { opacity: 0; transform: translateY(40px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        form {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeInZoom 1.5s ease;
+        }
+
+        input[type="file"], button {
+            padding: 12px 24px;
+            margin: 10px;
+            font-size: 1rem;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="file"] {
+            background: var(--bg-card);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .section {
+            max-width: 900px;
+            margin: 40px auto;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            animation: fadeInZoom 1s ease;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+
+        th {
+            background-color: rgba(99, 102, 241, 0.15);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 5px;
+            line-height: 2;
+        }
+
+        li {
+            transition: transform 0.3s ease, color 0.3s ease;
+            cursor: pointer;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            border-radius: 8px;
+            position: relative;
+            padding-left: 24px;
+        }
+        
+        li:before {
+            content: '•';
+            color: var(--primary);
+            font-weight: bold;
+            position: absolute;
+            left: 8px;
+        }
+
+        li:hover {
+            transform: translateX(5px);
+            color: var(--primary-light);
+            background-color: rgba(99, 102, 241, 0.1);
+        }
+
+        .highlight { color: var(--accent); }
+        .info { color: var(--primary-light); }
+        .error {
+            text-align: center;
+            color: #ef4444;
+            font-weight: bold;
+            background-color: rgba(239, 68, 68, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #ef4444;
+        }
+        
+        .similarity-bar {
+            position: relative;
+            height: 24px;
+            background-color: rgba(99, 102, 241, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            width: 100%;
+        }
+        
+        .similarity-fill {
+            position: absolute;
+            height: 100%;
+            left: 0;
+            top: 0;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 12px;
+            transition: width 1s ease-in-out;
+        }
+        
+        .similarity-bar span {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text);
+            line-height: 24px;
+            text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .section { opacity: 0; transform: translateY(40px); transition: all 1s ease; }
+        .section.visible { opacity: 1; transform: translateY(0); }
+
+        .floating-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .float-ball {
+            position: absolute;
+            width: 40px; height: 40px;
+            background: rgba(99, 102, 241, 0.05);
+            border-radius: 50%;
+            animation: float 20s infinite ease-in-out;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0); }
+            50% { transform: translateY(-100vh) translateX(50vw); }
+            100% { transform: translateY(0) translateX(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="floating-bg">
+    <div class="float-ball" style="top: 80%; left: 10%;"></div>
+    <div class="float-ball" style="top: 30%; left: 80%; width: 60px; height: 60px;"></div>
+    <div class="float-ball" style="top: 50%; left: 50%; width: 80px; height: 80px;"></div>
+</div>
+
+<h1>SLIDE SCRUTINIZER</h1>
+
+<form action="/upload" method="POST" enctype="multipart/form-data">
+    <input type="file" name="files" multiple accept=".pptx">
+    <button type="submit">Upload & Check</button>
+</form>
+
+{% if error %}
+<div class="section error">{{ error }}</div>
+{% endif %}
+
+{% if uploaded %}
+<div class="section">
+    <h2 class="info">Uploaded PPTs</h2>
+    <ul>
+        {% for file in uploaded %}
+            <li title="{{ file }}">{{ file.split('_', 1)[1] }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if skipped %}
+<div class="section">
+    <h2 class="highlight">Skipped PPTs (Empty or Unreadable)</h2>
+    <ul>
+        {% for file in skipped %}
+            <li>{{ file }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if duplicates %}
+<div class="section">
+    <h2 class="highlight">Duplicate PPTs Detected</h2>
+    <table>
+        <tr><th>File 1</th><th>File 2</th></tr>
+        {% for dup in duplicates %}
+        <tr>
+            <td title="{{ dup[0] }}">{{ dup[0].split('_', 1)[1] }}</td>
+            <td title="{{ dup[1] }}">{{ dup[1].split('_', 1)[1] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endif %}
+
+{% if google_percentages %}
+<div class="section">
+    <h2 class="info">Google Presence Percentage</h2>
+    <table>
+        <tr><th>File</th><th>Google Presence (%)</th></tr>
+        {% for result in google_percentages %}
+        <tr>
+            <td title="{{ result.filename }}">{{ result.filename.split('_', 1)[1] }}</td>
+            <td>{{ result.percentage }}%</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endif %}
+
+{% if non_duplicates %}
+<div class="section">
+    <h2 class="info">Final Non-Duplicate PPTs</h2>
+    <ul>
+        {% for file in non_duplicates %}
+            <li title="{{ file }}">{{ file.split('_', 1)[1] }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if similarities %}
+<div class="section">
+    <h2 class="highlight">Content Similarity Warnings (>50%)</h2>
+    <table>
+        <tr><th>File 1</th><th>File 2</th><th>Similarity</th></tr>
+        {% for sim in similarities %}
+        <tr>
+            <td title="{{ sim.file1 }}">{{ sim.file1.split('_', 1)[1] }}</td>
+            <td title="{{ sim.file2 }}">{{ sim.file2.split('_', 1)[1] }}</td>
+            <td>
+                <div class="similarity-bar">
+                    <div class="similarity-fill" style="width: {{ sim.similarity }}%;"></div>
+                    <span>{{ sim.similarity }}%</span>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endif %}
+
+<script>
+    const sections = document.querySelectorAll('.section');
+    const reveal = () => {
+        const triggerBottom = window.innerHeight * 0.9;
+        sections.forEach(section => {
+            const sectionTop = section.getBoundingClientRect().top;
+            if (sectionTop < triggerBottom) {
+                section.classList.add('visible');
+            }
+        });
+    };
+    window.addEventListener('scroll', reveal);
+    reveal();
+</script>
+
+<script>
+class CustomCursor {
+    constructor() {
+        if (CustomCursor.instance) return CustomCursor.instance;
+        CustomCursor.instance = this;
+
+        this.cursor = document.createElement('div');
+        this.cursor.className = 'custom-cursor';
+        this.cursor.style.opacity = '1';
+        this.cursorTrail = document.createElement('div');
+        this.cursorTrail.className = 'cursor-trail';
+        this.cursorDot = document.createElement('div');
+        this.cursorDot.className = 'cursor-dot';
+
+        this.cursor.appendChild(this.cursorTrail);
+        this.cursor.appendChild(this.cursorDot);
+        document.body.appendChild(this.cursor);
+
+        this.position = { x: 0, y: 0 };
+        this.target = { x: 0, y: 0 };
+        this.isVisible = true;
+        this.isHovering = false;
+
+        this.initStyles();
+        this.initEventListeners();
+        this.animate();
+    }
+
+    initStyles() {
+        const styles = `
+            .custom-cursor {
+                position: fixed;
+                pointer-events: none;
+                z-index: 999999;
+                opacity: 1;
+                transition: opacity 0.3s ease;
+            }
+            .custom-cursor.hidden { opacity: 0; }
+            .cursor-trail {
+                position: absolute;
+                width: 24px;
+                height: 24px;
+                border: 2px solid var(--primary);
+                border-radius: 50%;
+                transform: translate(-50%, -50%);
+                transition: width 0.2s ease, height 0.2s ease, border-color 0.2s ease;
+                box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+            }
+            .cursor-dot {
+                position: absolute;
+                width: 6px;
+                height: 6px;
+                background: var(--secondary);
+                border-radius: 50%;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                transition: background-color 0.2s ease;
+                box-shadow: 0 0 5px rgba(139, 92, 246, 0.5);
+            }
+            .custom-cursor.hovering .cursor-trail {
+                width: 40px;
+                height: 40px;
+                border-color: var(--accent);
+                box-shadow: 0 0 15px rgba(236, 72, 153, 0.4);
+            }
+            .custom-cursor.hovering .cursor-dot {
+                background: var(--accent);
+                box-shadow: 0 0 8px rgba(236, 72, 153, 0.6);
+            }
+        `;
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = styles;
+        document.head.appendChild(styleSheet);
+    }
+
+    initEventListeners() {
+        document.addEventListener('mousemove', this.onMouseMove.bind(this));
+        document.addEventListener('mouseenter', () => this.setVisibility(true));
+        document.addEventListener('mouseleave', () => this.setVisibility(false));
+
+        const hoverElements = document.querySelectorAll('a, button, .section, input[type="file"], li');
+        hoverElements.forEach(element => {
+            element.addEventListener('mouseenter', () => this.setHoverState(true));
+            element.addEventListener('mouseleave', () => this.setHoverState(false));
+        });
+    }
+
+    onMouseMove(e) {
+        this.target.x = e.clientX;
+        this.target.y = e.clientY;
+    }
+
+    setVisibility(visible) {
+        this.isVisible = visible;
+        this.cursor.classList.toggle('hidden', !visible);
+    }
+
+    setHoverState(hovering) {
+        this.isHovering = hovering;
+        this.cursor.classList.toggle('hovering', hovering);
+    }
+
+    animate() {
+        const ease = 0.15;
+        
+        this.position.x += (this.target.x - this.position.x) * ease;
+        this.position.y += (this.target.y - this.position.y) * ease;
+
+        this.cursor.style.left = `${this.position.x}px`;
+        this.cursor.style.top = `${this.position.y}px`;
+        this.cursorTrail.style.transform = `translate(-50%, -50%)`;
+        this.cursorDot.style.transform = `translate(-50%, -50%)`;
+
+        requestAnimationFrame(this.animate.bind(this));
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (!CustomCursor.instance) {
+        new CustomCursor();
+    }
+    
+    // Initialize particle system
+    new ParticleSystem();
+});
+</script>
+
+<script>
+class ParticleSystem {
+    constructor() {
+        this.canvas = document.createElement('canvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.particles = [];
+        this.mouseX = 0;
+        this.mouseY = 0;
+        this.animationFrame = null;
+        this.isActive = false;
+        
+        // Glow effect settings
+        this.glowRadius = 150; // Mouse proximity radius for glow effect
+        this.maxGlowIntensity = 0.4; // Maximum glow intensity
+        
+        // Financial theme colors
+        this.colors = [
+            'rgba(99, 102, 241, 0.4)',  // Primary (indigo)
+            'rgba(139, 92, 246, 0.3)',   // Mid (purple)
+            'rgba(236, 72, 153, 0.3)',   // Accent (pink)
+        ];
+        
+        // Glow colors (brighter versions of theme colors)
+        this.glowColors = [
+            'rgba(132, 134, 245, 0.8)',  // Primary (indigo)
+            'rgba(167, 139, 250, 0.8)',   // Mid (purple)
+            'rgba(244, 114, 182, 0.8)',   // Accent (pink)
+        ];
+        
+        // Initialize the system
+        this.init();
+    }
+    
+    init() {
+        // Setup canvas
+        this.canvas.classList.add('particle-canvas');
+        this.canvas.style.position = 'fixed';
+        this.canvas.style.top = '0';
+        this.canvas.style.left = '0';
+        this.canvas.style.width = '100%';
+        this.canvas.style.height = '100%';
+        this.canvas.style.pointerEvents = 'none';
+        this.canvas.style.zIndex = '0';
+        document.body.appendChild(this.canvas);
+        
+        // Set canvas to full screen
+        this.resizeCanvas();
+        
+        // Create initial particles
+        this.createParticles();
+        
+        // Add event listeners
+        window.addEventListener('resize', () => this.resizeCanvas());
+        document.addEventListener('mousemove', (e) => {
+            this.mouseX = e.clientX;
+            this.mouseY = e.clientY;
+        });
+        
+        // Start animation
+        this.animate();
+        this.isActive = true;
+    }
+    
+    resizeCanvas() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        
+        // Recreate particles when resizing
+        this.createParticles();
+    }
+    
+    createParticles() {
+        // Clear existing particles
+        this.particles = [];
+        
+        // Calculate number of particles based on screen size
+        const particleCount = Math.floor((window.innerWidth * window.innerHeight) / 15000);
+        
+        for (let i = 0; i < particleCount; i++) {
+            const colorIndex = Math.floor(Math.random() * this.colors.length);
+            this.particles.push({
+                x: Math.random() * this.canvas.width,
+                y: Math.random() * this.canvas.height,
+                size: Math.random() * 3 + 1,
+                baseSize: Math.random() * 3 + 1, // Store original size
+                speedX: (Math.random() - 0.5) * 0.5,
+                speedY: (Math.random() - 0.5) * 0.5,
+                color: this.colors[colorIndex],
+                glowColor: this.glowColors[colorIndex],
+                opacity: Math.random() * 0.5 + 0.2,
+                baseOpacity: Math.random() * 0.5 + 0.2, // Store original opacity
+                // Financial data simulation
+                value: Math.floor(Math.random() * 1000) / 10,
+                isRising: Math.random() > 0.5,
+                // Glow effect properties
+                glowIntensity: 0,
+                distanceToMouse: Infinity
+            });
+        }
+    }
+    
+    drawParticles() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Sort particles by glow intensity to render glowing particles on top
+        const sortedParticles = [...this.particles].sort((a, b) => a.glowIntensity - b.glowIntensity);
+        
+        sortedParticles.forEach(particle => {
+            // Draw connecting lines between nearby particles
+            this.particles.forEach(otherParticle => {
+                const dx = particle.x - otherParticle.x;
+                const dy = particle.y - otherParticle.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 100) {
+                    // Enhance line opacity based on glow intensity
+                    const lineOpacity = 0.15 * (1 - distance / 100) * (1 + Math.max(particle.glowIntensity, otherParticle.glowIntensity) * 1.5);
+                    
+                    this.ctx.beginPath();
+                    this.ctx.strokeStyle = `rgba(99, 102, 241, ${lineOpacity})`;
+                    this.ctx.lineWidth = 0.6;
+                    this.ctx.moveTo(particle.x, particle.y);
+                    this.ctx.lineTo(otherParticle.x, otherParticle.y);
+                    this.ctx.stroke();
+                }
+            });
+            
+            // Draw glow effect for particles near the mouse
+            if (particle.glowIntensity > 0) {
+                // Create radial gradient for glow effect
+                const gradient = this.ctx.createRadialGradient(
+                    particle.x, particle.y, particle.size,
+                    particle.x, particle.y, particle.size * (3 + particle.glowIntensity * 3)
+                );
+                
+                // Extract RGB values from the particle's glow color
+                const colorMatch = particle.glowColor.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
+                if (colorMatch) {
+                    const [_, r, g, b] = colorMatch;
+                    
+                    // Create gradient stops with enhanced opacity
+                    gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${0.9 * particle.glowIntensity})`);
+                    gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+                    
+                    // Draw glow
+                    this.ctx.beginPath();
+                    this.ctx.arc(particle.x, particle.y, particle.size * (3 + particle.glowIntensity * 2), 0, Math.PI * 2);
+                    this.ctx.fillStyle = gradient;
+                    this.ctx.fill();
+                }
+            }
+            
+            // Draw the particle
+            this.ctx.beginPath();
+            this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+            this.ctx.fillStyle = particle.color;
+            this.ctx.fill();
+        });
+    }
+    
+    updateParticles() {
+        this.particles.forEach(particle => {
+            // Calculate distance to mouse
+            const dx = this.mouseX - particle.x;
+            const dy = this.mouseY - particle.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            particle.distanceToMouse = distance;
+            
+            // Update glow intensity based on mouse proximity
+            if (distance < this.glowRadius) {
+                // Inverse relationship: closer = more intense
+                particle.glowIntensity = this.maxGlowIntensity * (1 - distance / this.glowRadius);
+                
+                // Slightly increase size when glowing
+                particle.size = particle.baseSize * (1 + particle.glowIntensity);
+                
+                // Attract particles slightly toward mouse
+                const attractionForce = 0.02 * particle.glowIntensity;
+                particle.speedX += dx * attractionForce / distance;
+                particle.speedY += dy * attractionForce / distance;
+            } else {
+                particle.glowIntensity = 0;
+                particle.size = particle.baseSize;
+            }
+            
+            // Apply speed limits
+            const maxSpeed = 1.5;
+            particle.speedX = Math.max(Math.min(particle.speedX, maxSpeed), -maxSpeed);
+            particle.speedY = Math.max(Math.min(particle.speedY, maxSpeed), -maxSpeed);
+            
+            // Update position
+            particle.x += particle.speedX;
+            particle.y += particle.speedY;
+            
+            // Add slight random movement
+            particle.x += (Math.random() - 0.5) * 0.3;
+            particle.y += (Math.random() - 0.5) * 0.3;
+            
+            // Boundary check with wrapping
+            if (particle.x < 0) particle.x = this.canvas.width;
+            if (particle.x > this.canvas.width) particle.x = 0;
+            if (particle.y < 0) particle.y = this.canvas.height;
+            if (particle.y > this.canvas.height) particle.y = 0;
+            
+            // Apply friction to gradually slow particles
+            particle.speedX *= 0.98;
+            particle.speedY *= 0.98;
+        });
+    }
+    
+    animate() {
+        this.updateParticles();
+        this.drawParticles();
+        this.animationFrame = requestAnimationFrame(this.animate.bind(this));
+    }
+}
+</script>
+
+</body>
+</html>
