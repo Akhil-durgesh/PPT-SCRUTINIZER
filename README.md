@@ -4,7 +4,7 @@ STEP1-Create the folder with ppt_web_checker on your desktop
 
 STEP2-Open the folder in the vs code or whatever editor you use
 
-STEP3-.Create the file app.py in your editor
+STEP3-.Create the file app.py in your editor and add app.py code add your google api key in the code at 16thline
 
 STEP4-Create a folder with templates and add the file with index.html 
 
