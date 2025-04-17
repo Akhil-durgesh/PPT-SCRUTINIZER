@@ -13,7 +13,7 @@ UPLOAD_FOLDER = 'uploads'
 DATA_FILE = 'data.json'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-API_KEY = "AIzaSyDLwnq6LZbOdywpAtqmjLDx0hJpUEmGEz0"
+API_KEY = "//place your google api key"
 SEARCH_ENGINE_ID = "b36d0933710b745ad"
 
 if not os.path.exists(UPLOAD_FOLDER):
